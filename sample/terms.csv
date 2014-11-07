@@ -1,0 +1,3 @@
+"name","parent","parent_id","description","slug"
+"Parent term",0,0,"term description",
+"Children term","Parent term",,,"children-slug"

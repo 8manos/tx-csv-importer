@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Taxonomies CSV Importer
+Plugin Name: Taxonomy Terms CSV Importer
 Plugin URI:
 Description: Import taxonomy terms from csv file.
 Author: Mantish
@@ -88,16 +88,14 @@ class TX_CSV_Importer extends WP_Importer {
 	}
 
 	/**
-	* Insert post and postmeta using wp_post_helper.
+	* Insert or update terms using WordPress functions
 	*
-	* More information: https://gist.github.com/4084471
-	*
-	* @param array $post
-	* @param array $meta
-	* @param array $terms
-	* @param string $thumbnail The uri or path of thumbnail image.
+	* @param string $term_name
+	* @param string $taxonomy
+	* @param array $args
 	* @param bool $is_update
-	* @return int|false Saved post id. If failed, return false.
+	* @param int $term_id
+	* @return array with term id and taxonomy. If failed, return WP_Error.
 	*/
 	public function save_term($term_name,$taxonomy,$args,$is_update,$term_id) {
 
@@ -243,6 +241,6 @@ class TX_CSV_Importer extends WP_Importer {
 // setup importer
 $tx_csv_importer = new TX_CSV_Importer();
 
-register_importer('csv', __('CSV', 'tx-csv-importer'), __('Import taxonomy terms from csv file.', 'tx-csv-importer'), array ($tx_csv_importer, 'dispatch'));
+register_importer('csv', __('CSV Taxonomy terms', 'tx-csv-importer'), __('Import taxonomy terms from csv file.', 'tx-csv-importer'), array ($tx_csv_importer, 'dispatch'));
 
 } // class_exists( 'WP_Importer' )

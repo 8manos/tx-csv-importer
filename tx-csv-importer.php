@@ -62,7 +62,36 @@ class TX_CSV_Importer extends WP_Importer {
 		echo '<li>'.sprintf( __( 'You must use field delimiter as "%s"', 'tx-csv-importer'), TX_CSV_Helper::DELIMITER ).'</li>';
 		echo '<li>'.__( 'You must quote all text cells.', 'tx-csv-importer' ).'</li>';
 		echo '</ol>';
-		wp_import_upload_form( add_query_arg('step', 1) );
+		//wp_import_upload_form( add_query_arg('step', 1) );
+
+		$bytes = apply_filters( 'import_upload_size_limit', wp_max_upload_size() );
+    $size = size_format( $bytes );
+    $upload_dir = wp_upload_dir();
+    if ( ! empty( $upload_dir['error'] ) ) :
+      ?><div class="error"><p><?php _e('Before you can upload your import file, you will need to fix the following error:'); ?></p>
+      <p><strong><?php echo $upload_dir['error']; ?></strong></p></div><?php
+    else :
+			?>
+			<form enctype="multipart/form-data" id="import-upload-form" method="post" class="wp-upload-form" action="<?php echo esc_url( wp_nonce_url( add_query_arg('step', 1), 'import-upload' ) ); ?>">
+				<p>
+					<label for="upload"><?php _e( 'Choose a file from your computer:' ); ?></label> (<?php printf( __('Maximum size: %s' ), $size ); ?>)
+					<input type="file" id="upload" name="import" size="25" />
+					<br />
+					<label>Taxonomy <select name="taxonomy">
+						<?php
+						$taxonomies = get_taxonomies(array(), 'objects');
+						foreach ( $taxonomies as $taxonomy ) {
+							echo '<option value="' . $taxonomy->name . '">' . $taxonomy->label . '</option>';
+						}
+						?>
+					</select></label>
+					<input type="hidden" name="action" value="save" />
+					<input type="hidden" name="max_file_size" value="<?php echo $bytes; ?>" />
+				</p>
+			<?php submit_button( __('Upload file and import'), 'button' ); ?>
+			</form>
+			<?php
+		endif;
 	}
 
 	// Step 2
@@ -134,8 +163,7 @@ class TX_CSV_Importer extends WP_Importer {
 				$is_update = false;
 				$error = new WP_Error();
 
-				/* Toca hacerla seleccionable !!! */
-				$taxonomy = 'product_cat';
+				$taxonomy = $_POST['taxonomy'];
 
 				// term name
 				$term_name = $h->get_data($this,$data,'name');
